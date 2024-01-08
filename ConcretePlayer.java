@@ -5,7 +5,7 @@
 public class ConcretePlayer  implements Player{
 
     //Fields:
-    private final boolean playerType;
+    private boolean playerType;
     private int winsNum;
 
     //Constructors:
@@ -14,10 +14,13 @@ public class ConcretePlayer  implements Player{
     }
 
     //Methods:
-    public boolean isPlayerOne(){
+    public boolean isPlayerOne(){  //Means the white
         return this.playerType;
     }
     public int getWins(){
         return winsNum;
+    }
+    public void addWin(){
+        this.winsNum++;
     }
 }

@@ -5,13 +5,17 @@
 public class GameLogic implements PlayableLogic {
     //Fields:
     private Position[][] board = new Position[11][11];
-    private Player player1 = new ConcretePlayer(true);
-    private Player player2 = new ConcretePlayer(false);
+    private ConcretePlayer player1 = new ConcretePlayer(true);
+    private ConcretePlayer player2 = new ConcretePlayer(false);
     private int turnsCounter = 0;
 
 
     //Constructors:
-    public GameLogic(){
+    public GameLogic() {
+        init();
+    }
+
+    private void init(){
 
         //Init board:
         for(int i=0; i<=10; i++){
@@ -63,11 +67,14 @@ public class GameLogic implements PlayableLogic {
         board[0][6].setPiece(new Pawn(player2));
         board[0][7].setPiece(new Pawn(player2));
         board[1][5].setPiece(new Pawn(player2));
-
     }
 
     //Methods:
-    public boolean move(Position a, Position b){
+    public boolean move(Position gottenA, Position gottenB){
+        //Creating new pointers to the real positions on the board according to the given coordinate:
+        Position a = board[gottenA.getX()][gottenA.getY()]; //Will point to the real src position
+        Position b = board[gottenB.getX()][gottenB.getY()]; //Will point to the real dst position
+
         boolean bCorner = false;
 
         //Checking if b is empty:
@@ -103,6 +110,10 @@ public class GameLogic implements PlayableLogic {
             //Moving the piece:
             b.setPiece(a.getPieceOn());
             a.clearPiece();
+            //Capturing check: (Only for pawn)
+            if(!b.getPieceOn().getType().equals("U+2654")){
+                CapturingCheck(b);
+            }
             turnsCounter++;
             return true;
         }
@@ -123,6 +134,10 @@ public class GameLogic implements PlayableLogic {
             }
             b.setPiece(a.getPieceOn());
             a.clearPiece();
+            //Capturing check: (Only for pawn)
+            if(!b.getPieceOn().getType().equals("U+2654")){
+                CapturingCheck(b);
+            }
             turnsCounter++;
             return true;
         }
@@ -130,8 +145,99 @@ public class GameLogic implements PlayableLogic {
         return false;
     }
 
-    public Piece getPieceAtPosition(Position position){
-        return position.getPieceOn();
+    /**
+     * Private use function activated after moving.
+     * It's checks if a capturing has done (only by pawn).
+     * Remainder: king type is : "U+2654".
+     * @param p - the position in which the pawn
+     */
+    private void CapturingCheck(Position p){
+
+        //Up eaten:
+        if(isValidCoor(p.getX(), p.getY()-1)){  //Position validation check.
+            if(board[p.getX()][p.getY()-1].getPieceOn()!= null) {  //Checking that there is a piece there.
+                if (board[p.getX()][p.getY() - 1].getPieceOn().getOwner() != p.getPieceOn().getOwner()) {  //Owner check.
+                    if (!board[p.getX()][p.getY() - 1].getPieceOn().getType().equals("U+2654")) { //King eating try checking.
+                        //Edge eating:
+                        if (!isValidCoor(p.getX(), p.getY() - 2)) {
+                            board[p.getX()][p.getY()-1].clearPiece();
+                        }
+                        //Two sides capture eating:
+                        else if(board[p.getX()][p.getY()-2].getPieceOn()!= null &&
+                                board[p.getX()][p.getY()-2].getPieceOn().getOwner() == p.getPieceOn().getOwner() &&
+                                !board[p.getX()][p.getY()-2].getPieceOn().getType().equals("U+2654")){
+                            board[p.getX()][p.getY()-1].clearPiece();
+                        }
+                    }
+                }
+            }
+        }
+
+        //Right eaten:
+        if(isValidCoor(p.getX()+1, p.getY())){  //Position validation check.
+            if(board[p.getX()+1][p.getY()].getPieceOn()!= null) {  //Checking that there is a piece there.
+                if (board[p.getX()+1][p.getY()].getPieceOn().getOwner() != p.getPieceOn().getOwner()) {  //Owner check.
+                    if (!board[p.getX()+1][p.getY()].getPieceOn().getType().equals("U+2654")) { //King eating try checking.
+                        //Edge eating:
+                        if (!isValidCoor(p.getX()+2, p.getY())) {
+                            board[p.getX()+1][p.getY()].clearPiece();
+                        }
+                        //Two sides capture eating:
+                        else if(board[p.getX()+2][p.getY()].getPieceOn()!= null &&
+                                board[p.getX()+2][p.getY()].getPieceOn().getOwner() == p.getPieceOn().getOwner() &&
+                                !board[p.getX()+2][p.getY()].getPieceOn().getType().equals("U+2654")){
+                            board[p.getX()+1][p.getY()].clearPiece();
+                        }
+                    }
+                }
+            }
+        }
+
+        //Down eaten:
+        if(isValidCoor(p.getX(), p.getY()+1)){  //Position validation check.
+            if(board[p.getX()][p.getY()+1].getPieceOn()!= null) {  //Checking that there is a piece there.
+                if (board[p.getX()][p.getY()+1].getPieceOn().getOwner() != p.getPieceOn().getOwner()) {  //Owner check.
+                    if (!board[p.getX()][p.getY()+1].getPieceOn().getType().equals("U+2654")) { //King eating try checking.
+                        //Edge eating:
+                        if (!isValidCoor(p.getX(), p.getY()+2)) {
+                            board[p.getX()][p.getY()+1].clearPiece();
+                        }
+                        //Two sides capture eating:
+                        else if(board[p.getX()][p.getY()+2].getPieceOn()!= null &&
+                                board[p.getX()][p.getY()+2].getPieceOn().getOwner() == p.getPieceOn().getOwner() &&
+                                !board[p.getX()][p.getY()+2].getPieceOn().getType().equals("U+2654")){
+                            board[p.getX()][p.getY()+1].clearPiece();
+                        }
+                    }
+                }
+            }
+        }
+
+        //Left eaten:
+        if(isValidCoor(p.getX()-1, p.getY())){  //Position validation check.
+            if(board[p.getX()-1][p.getY()].getPieceOn()!= null) {  //Checking that there is a piece there.
+                if (board[p.getX()-1][p.getY()].getPieceOn().getOwner() != p.getPieceOn().getOwner()) {  //Owner check.
+                    if (!board[p.getX()-1][p.getY()].getPieceOn().getType().equals("U+2654")) { //King eating try checking.
+                        //Edge eating:
+                        if (!isValidCoor(p.getX()-2, p.getY())) {
+                            board[p.getX()-1][p.getY()].clearPiece();
+                        }
+                        //Two sides capture eating:
+                        else if(board[p.getX()-2][p.getY()].getPieceOn()!= null &&
+                                board[p.getX()-2][p.getY()].getPieceOn().getOwner() == p.getPieceOn().getOwner() &&
+                                !board[p.getX()-2][p.getY()].getPieceOn().getType().equals("U+2654")){
+                            board[p.getX()-1][p.getY()].clearPiece();
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    public Piece getPieceAtPosition(Position gottenPosition){
+        return board[gottenPosition.getX()][gottenPosition.getY()].getPieceOn();
     }
 
     public Player getFirstPlayer(){
@@ -156,6 +262,7 @@ public class GameLogic implements PlayableLogic {
 
         //Checking if the KING is in a corner:
         if( (kingX==0)&&(kingY==0) || (kingX==10)&&(kingY==0) || (kingX==10)&&(kingY==10) || (kingX==0)&&(kingY==10)){
+            this.player1.addWin(); //Adding a win to player1 (white).
             return true;
         }
 
@@ -188,11 +295,14 @@ public class GameLogic implements PlayableLogic {
             kingCap = false;
         }
 
+        if(kingCap){
+            this.player2.addWin(); //Adding a win to player2 (black).
+        }
         return kingCap;
     }
 
     /**
-     * private function helping validate boundaries exceeding:
+     * private function helping validate boundaries exceeding.
      * @param x - x coordinate
      * @param y - y coordinate
      * @return true if the index is valid and false if index out of boundaries.
@@ -213,6 +323,12 @@ public class GameLogic implements PlayableLogic {
     }
 
     //TODO: add the rest of the functions here !
+
+    public void reset(){
+        init(); //Reset board.
+
+
+    }
 
 
 
