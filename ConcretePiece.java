@@ -9,6 +9,7 @@ public abstract class ConcretePiece implements Piece{
     //Fields:
     protected Player owner;
     protected String type;
+    protected String name;
 
 
     //Constructors:
@@ -22,5 +23,6 @@ public abstract class ConcretePiece implements Piece{
     public String getType(){
         return type;
     }
+    public void setName(String name){ this.name =name; }
 
 }

@@ -4,7 +4,7 @@
 
 public class GameLogic implements PlayableLogic {
     //Fields:
-    private Position[][] board = new Position[11][11];
+    private ConcretePiece[][] board = new ConcretePiece[11][11];
     private ConcretePlayer player1 = new ConcretePlayer(true);
     private ConcretePlayer player2 = new ConcretePlayer(false);
     private int turnsCounter = 0;
@@ -16,69 +16,67 @@ public class GameLogic implements PlayableLogic {
     }
 
     private void init(){
-
         //Init board:
-        for(int i=0; i<=10; i++){
-            for(int j=0; j<=10; j++){
-                board[i][j] = new Position(i,j);
-            }
-        }
 
         //Init white pawns and king:
-        board[5][3].setPiece(new Pawn(player1));
-        board[4][4].setPiece(new Pawn(player1));
-        board[5][4].setPiece(new Pawn(player1));
-        board[6][4].setPiece(new Pawn(player1));
-        board[3][5].setPiece(new Pawn(player1));
-        board[4][5].setPiece(new Pawn(player1));
-        board[6][5].setPiece(new Pawn(player1));
-        board[7][5].setPiece(new Pawn(player1));
-        board[4][6].setPiece(new Pawn(player1));
-        board[5][6].setPiece(new Pawn(player1));
-        board[6][6].setPiece(new Pawn(player1));
-        board[5][7].setPiece(new Pawn(player1));
-        board[5][5].setPiece(new King(player1));
+        board[5][3] = new Pawn(player1);
+        board[4][4] = new Pawn(player1);
+        board[5][4] = new Pawn(player1);
+        board[6][4] = new Pawn(player1);
+        board[3][5] = new Pawn(player1);
+        board[4][5] = new Pawn(player1);
+        board[6][5] = new Pawn(player1);
+        board[7][5] = new Pawn(player1);
+        board[4][6] = new Pawn(player1);
+        board[5][6] = new Pawn(player1);
+        board[6][6] = new Pawn(player1);
+        board[5][7] = new Pawn(player1);
+        board[5][5] = new King(player1);
 
         //Init black pawns:
-        board[3][0].setPiece(new Pawn(player2));
-        board[4][0].setPiece(new Pawn(player2));
-        board[5][0].setPiece(new Pawn(player2));
-        board[6][0].setPiece(new Pawn(player2));
-        board[7][0].setPiece(new Pawn(player2));
-        board[5][1].setPiece(new Pawn(player2));
+        board[3][0] = new Pawn(player2);
+        board[4][0] = new Pawn(player2);
+        board[5][0] = new Pawn(player2);
+        board[6][0] = new Pawn(player2);
+        board[7][0] = new Pawn(player2);
+        board[5][1] = new Pawn(player2);
 
-        board[10][3].setPiece(new Pawn(player2));
-        board[10][4].setPiece(new Pawn(player2));
-        board[10][5].setPiece(new Pawn(player2));
-        board[10][6].setPiece(new Pawn(player2));
-        board[10][7].setPiece(new Pawn(player2));
-        board[9][5].setPiece(new Pawn(player2));
+        board[10][3] = new Pawn(player2);
+        board[10][4] = new Pawn(player2);
+        board[10][5] = new Pawn(player2);
+        board[10][6] = new Pawn(player2);
+        board[10][7] = new Pawn(player2);
+        board[9][5] = new Pawn(player2);
 
-        board[3][10].setPiece(new Pawn(player2));
-        board[4][10].setPiece(new Pawn(player2));
-        board[5][10].setPiece(new Pawn(player2));
-        board[6][10].setPiece(new Pawn(player2));
-        board[7][10].setPiece(new Pawn(player2));
-        board[5][9].setPiece(new Pawn(player2));
+        board[3][10] = new Pawn(player2);
+        board[4][10] = new Pawn(player2);
+        board[5][10] = new Pawn(player2);
+        board[6][10] = new Pawn(player2);
+        board[7][10] = new Pawn(player2);
+        board[5][9] = new Pawn(player2);
 
-        board[0][3].setPiece(new Pawn(player2));
-        board[0][4].setPiece(new Pawn(player2));
-        board[0][5].setPiece(new Pawn(player2));
-        board[0][6].setPiece(new Pawn(player2));
-        board[0][7].setPiece(new Pawn(player2));
-        board[1][5].setPiece(new Pawn(player2));
+        board[0][3] = new Pawn(player2);
+        board[0][4] = new Pawn(player2);
+        board[0][5] = new Pawn(player2);
+        board[0][6] = new Pawn(player2);
+        board[0][7] = new Pawn(player2);
+        board[1][5] = new Pawn(player2);
     }
 
     //Methods:
-    public boolean move(Position gottenA, Position gottenB){
+    public boolean move(Position a, Position b){
         //Creating new pointers to the real positions on the board according to the given coordinate:
-        Position a = board[gottenA.getX()][gottenA.getY()]; //Will point to the real src position
-        Position b = board[gottenB.getX()][gottenB.getY()]; //Will point to the real dst position
+        //Position a = board[gottenA.getX()][gottenA.getY()]; //Will point to the real src position
+        //Position b = board[gottenB.getX()][gottenB.getY()]; //Will point to the real dst position
 
         boolean bCorner = false;
 
+        //Checking if a is empty:
+        if(board[a.getX()][a.getY()]==null){
+            return false;
+        }
         //Checking if b is empty:
-        if(!b.isEmpty()){
+        if(board[b.getX()][b.getY()]!=null){
             return false;
         }
 
@@ -88,7 +86,7 @@ public class GameLogic implements PlayableLogic {
         }
 
         //If b is a corner stone but the piece is pawn:
-        if(bCorner && (a.getPieceOn()!=null && !a.getPieceOn().getType().equals("U+2654"))){
+        if (bCorner && !board[a.getX()][a.getY()].getType().equals("U+2654")){
             return false;
         }
 
@@ -98,20 +96,20 @@ public class GameLogic implements PlayableLogic {
             if(b.getY()>a.getY()){
                 //check from a to b by +
                 for(int i=a.getY()+1; i<=b.getY(); i++) {
-                    if (!board[a.getX()][i].isEmpty()) return false;
+                    if (board[a.getX()][i] != null) return false;
                 }
             }
             else{
                 //check from a to b by -
                 for(int i=a.getY()-1; i>=b.getY(); i--) {
-                    if (!board[a.getX()][i].isEmpty()) return false;
+                    if (board[a.getX()][i] != null) return false;
                 }
             }
             //Moving the piece:
-            b.setPiece(a.getPieceOn());
-            a.clearPiece();
+            board[b.getX()][b.getY()] = board[a.getX()][a.getY()];
+            board[a.getX()][a.getY()] = null;
             //Capturing check: (Only for pawn)
-            if(!b.getPieceOn().getType().equals("U+2654")){
+            if(!board[b.getX()][b.getY()].getType().equals("U+2654")){
                 CapturingCheck(b);
             }
             turnsCounter++;
@@ -123,19 +121,20 @@ public class GameLogic implements PlayableLogic {
             if(b.getX()>a.getX()){
                 //check from a to b by +
                 for(int i=a.getX()+1; i<=b.getX(); i++) {
-                    if (!board[i][a.getY()].isEmpty()) return false;
+                    if (board[i][a.getY()] != null) return false;
                 }
             }
             else{
                 //check from a to b by -
                 for(int i=a.getX()-1; i>=b.getX(); i--) {
-                    if (!board[i][a.getY()].isEmpty()) return false;
+                    if (board[i][a.getY()] != null) return false;
                 }
             }
-            b.setPiece(a.getPieceOn());
-            a.clearPiece();
+            //Moving the piece:
+            board[b.getX()][b.getY()] = board[a.getX()][a.getY()];
+            board[a.getX()][a.getY()] = null;
             //Capturing check: (Only for pawn)
-            if(!b.getPieceOn().getType().equals("U+2654")){
+            if(!board[b.getX()][b.getY()].getType().equals("U+2654")){
                 CapturingCheck(b);
             }
             turnsCounter++;
@@ -155,18 +154,18 @@ public class GameLogic implements PlayableLogic {
 
         //Up eaten:
         if(isValidCoor(p.getX(), p.getY()-1)){  //Position validation check.
-            if(board[p.getX()][p.getY()-1].getPieceOn()!= null) {  //Checking that there is a piece there.
-                if (board[p.getX()][p.getY() - 1].getPieceOn().getOwner() != p.getPieceOn().getOwner()) {  //Owner check.
-                    if (!board[p.getX()][p.getY() - 1].getPieceOn().getType().equals("U+2654")) { //King eating try checking.
+            if(board[p.getX()][p.getY()-1] != null) {  //Checking that there is a piece there.
+                if (board[p.getX()][p.getY()-1].getOwner() != board[p.getX()][p.getY()].getOwner()) {  //Owner check.
+                    if (!board[p.getX()][p.getY()-1].getType().equals("U+2654")) { //King-eating-try checking.
                         //Edge eating:
-                        if (!isValidCoor(p.getX(), p.getY() - 2)) {
-                            board[p.getX()][p.getY()-1].clearPiece();
+                        if (!isValidCoor(p.getX(), p.getY()-2)) {
+                            board[p.getX()][p.getY()-1] = null;
                         }
                         //Two sides capture eating:
-                        else if(board[p.getX()][p.getY()-2].getPieceOn()!= null &&
-                                board[p.getX()][p.getY()-2].getPieceOn().getOwner() == p.getPieceOn().getOwner() &&
-                                !board[p.getX()][p.getY()-2].getPieceOn().getType().equals("U+2654")){
-                            board[p.getX()][p.getY()-1].clearPiece();
+                        else if(board[p.getX()][p.getY()-2] != null &&
+                                board[p.getX()][p.getY()-2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
+                                !board[p.getX()][p.getY()-2].getType().equals("U+2654")){
+                            board[p.getX()][p.getY()-1] = null;
                         }
                     }
                 }
@@ -175,18 +174,18 @@ public class GameLogic implements PlayableLogic {
 
         //Right eaten:
         if(isValidCoor(p.getX()+1, p.getY())){  //Position validation check.
-            if(board[p.getX()+1][p.getY()].getPieceOn()!= null) {  //Checking that there is a piece there.
-                if (board[p.getX()+1][p.getY()].getPieceOn().getOwner() != p.getPieceOn().getOwner()) {  //Owner check.
-                    if (!board[p.getX()+1][p.getY()].getPieceOn().getType().equals("U+2654")) { //King eating try checking.
+            if(board[p.getX()+1][p.getY()] != null) {  //Checking that there is a piece there.
+                if (board[p.getX()+1][p.getY()].getOwner() != board[p.getX()][p.getY()].getOwner()) {  //Owner check.
+                    if (!board[p.getX()+1][p.getY()].getType().equals("U+2654")) { //King-eating-try checking.
                         //Edge eating:
                         if (!isValidCoor(p.getX()+2, p.getY())) {
-                            board[p.getX()+1][p.getY()].clearPiece();
+                            board[p.getX()+1][p.getY()] = null;
                         }
                         //Two sides capture eating:
-                        else if(board[p.getX()+2][p.getY()].getPieceOn()!= null &&
-                                board[p.getX()+2][p.getY()].getPieceOn().getOwner() == p.getPieceOn().getOwner() &&
-                                !board[p.getX()+2][p.getY()].getPieceOn().getType().equals("U+2654")){
-                            board[p.getX()+1][p.getY()].clearPiece();
+                        else if(board[p.getX()+2][p.getY()] != null &&
+                                board[p.getX()+2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
+                                !board[p.getX()+2][p.getY()].getType().equals("U+2654")){
+                            board[p.getX()+1][p.getY()] = null;
                         }
                     }
                 }
@@ -195,18 +194,18 @@ public class GameLogic implements PlayableLogic {
 
         //Down eaten:
         if(isValidCoor(p.getX(), p.getY()+1)){  //Position validation check.
-            if(board[p.getX()][p.getY()+1].getPieceOn()!= null) {  //Checking that there is a piece there.
-                if (board[p.getX()][p.getY()+1].getPieceOn().getOwner() != p.getPieceOn().getOwner()) {  //Owner check.
-                    if (!board[p.getX()][p.getY()+1].getPieceOn().getType().equals("U+2654")) { //King eating try checking.
+            if(board[p.getX()][p.getY()+1] != null) {  //Checking that there is a piece there.
+                if (board[p.getX()][p.getY()+1].getOwner() != board[p.getX()][p.getY()].getOwner()) {  //Owner check.
+                    if (!board[p.getX()][p.getY()+1].getType().equals("U+2654")) { //King-eating-try checking.
                         //Edge eating:
                         if (!isValidCoor(p.getX(), p.getY()+2)) {
-                            board[p.getX()][p.getY()+1].clearPiece();
+                            board[p.getX()][p.getY()+1] = null;
                         }
                         //Two sides capture eating:
-                        else if(board[p.getX()][p.getY()+2].getPieceOn()!= null &&
-                                board[p.getX()][p.getY()+2].getPieceOn().getOwner() == p.getPieceOn().getOwner() &&
-                                !board[p.getX()][p.getY()+2].getPieceOn().getType().equals("U+2654")){
-                            board[p.getX()][p.getY()+1].clearPiece();
+                        else if(board[p.getX()][p.getY()+2] != null &&
+                                board[p.getX()][p.getY()+2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
+                                !board[p.getX()][p.getY()+2].getType().equals("U+2654")){
+                            board[p.getX()][p.getY()+1] = null;
                         }
                     }
                 }
@@ -215,29 +214,27 @@ public class GameLogic implements PlayableLogic {
 
         //Left eaten:
         if(isValidCoor(p.getX()-1, p.getY())){  //Position validation check.
-            if(board[p.getX()-1][p.getY()].getPieceOn()!= null) {  //Checking that there is a piece there.
-                if (board[p.getX()-1][p.getY()].getPieceOn().getOwner() != p.getPieceOn().getOwner()) {  //Owner check.
-                    if (!board[p.getX()-1][p.getY()].getPieceOn().getType().equals("U+2654")) { //King eating try checking.
+            if(board[p.getX()-1][p.getY()] != null) {  //Checking that there is a piece there.
+                if (board[p.getX()-1][p.getY()].getOwner() != board[p.getX()][p.getY()].getOwner()) {  //Owner check.
+                    if (!board[p.getX()-1][p.getY()].getType().equals("U+2654")) { //King-eating-try checking.
                         //Edge eating:
                         if (!isValidCoor(p.getX()-2, p.getY())) {
-                            board[p.getX()-1][p.getY()].clearPiece();
+                            board[p.getX()+1][p.getY()] = null;
                         }
                         //Two sides capture eating:
-                        else if(board[p.getX()-2][p.getY()].getPieceOn()!= null &&
-                                board[p.getX()-2][p.getY()].getPieceOn().getOwner() == p.getPieceOn().getOwner() &&
-                                !board[p.getX()-2][p.getY()].getPieceOn().getType().equals("U+2654")){
-                            board[p.getX()-1][p.getY()].clearPiece();
+                        else if(board[p.getX()-2][p.getY()] != null &&
+                                board[p.getX()-2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
+                                !board[p.getX()-2][p.getY()].getType().equals("U+2654")){
+                            board[p.getX()-1][p.getY()] = null;
                         }
                     }
                 }
             }
         }
-
-
     }
 
-    public Piece getPieceAtPosition(Position gottenPosition){
-        return board[gottenPosition.getX()][gottenPosition.getY()].getPieceOn();
+    public Piece getPieceAtPosition(Position p){
+        return board[p.getX()][p.getY()];
     }
 
     public Player getFirstPlayer(){
@@ -251,11 +248,14 @@ public class GameLogic implements PlayableLogic {
 
         //Finding the KING:
         int kingX=5, kingY=5;
+        outerLoop:
         for(int i=0; i<=10; i++){
+            innerLoop:
             for(int j=0; j<=10; j++){
-                if(board[i][j].getPieceOn()!=null && board[i][j].getPieceOn().getType().equals("U+2654")){
+                if(board[i][j] !=null && board[i][j].getType().equals("U+2654")){
                     kingX = i;
                     kingY = j;
+                    break outerLoop;
                 }
             }
         }
@@ -277,21 +277,22 @@ public class GameLogic implements PlayableLogic {
         //Checking if the KING is captured:
         boolean kingCap = true;
 
-        //Assuming its captured unless one side is empty or white pawn:
+        //Assuming it's captured unless one side is empty or white pawn:
+        //Remainder: the sign for white pawn is: "U+2659".
         //Up:
-        if(isValidCoor(kingX,kingY-1) && (board[kingX][kingY-1].isEmpty() || board[kingX][kingY-1].getPieceOn().getType().equals("U+2659"))){
+        if(isValidCoor(kingX,kingY-1) && (board[kingX][kingY-1] == null || board[kingX][kingY-1].getType().equals("U+2659"))){
             kingCap = false;
         }
         //Right:
-        if(isValidCoor(kingX+1,kingY) && (board[kingX+1][kingY].isEmpty() || board[kingX+1][kingY].getPieceOn().getType().equals("U+2659"))){
+        if(isValidCoor(kingX+1,kingY) && (board[kingX+1][kingY] == null || board[kingX+1][kingY].getType().equals("U+2659"))){
             kingCap = false;
         }
         //Down:
-        if(isValidCoor(kingX,kingY+1) && (board[kingX][kingY+1].isEmpty() || board[kingX][kingY+1].getPieceOn().getType().equals("U+2659"))){
+        if(isValidCoor(kingX,kingY+1) && (board[kingX][kingY+1] == null || board[kingX][kingY+1].getType().equals("U+2659"))){
             kingCap = false;
         }
         //Left:
-        if(isValidCoor(kingX-1,kingY) && (board[kingX-1][kingY].isEmpty() || board[kingX-1][kingY].getPieceOn().getType().equals("U+2659"))){
+        if(isValidCoor(kingX-1,kingY) && (board[kingX-1][kingY] == null || board[kingX-1][kingY].getType().equals("U+2659"))){
             kingCap = false;
         }
 
@@ -322,16 +323,19 @@ public class GameLogic implements PlayableLogic {
         return turnsCounter%2==0;
     }
 
-    //TODO: add the rest of the functions here !
-
     public void reset(){
-        init(); //Reset board.
-
-
+        //Reset board:
+        for(int i=0; i<=10; i++){
+            for(int j=0; j<=10; j++){
+                board[i][j] = null;
+            }
+        }
+        init();
     }
 
-
-
+    public void undoLastMove(){
+        //TODO: complete.
+    }
 
     public int getBoardSize(){
         return 11;

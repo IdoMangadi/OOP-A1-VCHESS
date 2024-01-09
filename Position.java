@@ -6,7 +6,6 @@ public class Position {
     //Fields:
     private int x;
     private int y;
-    private Piece pieceOn;
 
     //Constructors:
     public Position(int x, int y){
@@ -23,23 +22,6 @@ public class Position {
     }
     public int getY(){
         return this.y;
-    }
-    public Piece getPieceOn(){
-        return this.pieceOn;
-    }
-
-    public void setPiece(Piece pieceToSet){
-        this.pieceOn = pieceToSet;
-    }
-    public void clearPiece(){
-        this.pieceOn = null;
-    }
-
-    public boolean isEmpty(){
-        if (this.pieceOn == null){
-            return true;
-        }
-        return false;
     }
 
 }
