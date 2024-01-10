@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /**
  * This class...
  */
@@ -8,6 +10,7 @@ public class GameLogic implements PlayableLogic {
     private ConcretePlayer player1 = new ConcretePlayer(true);
     private ConcretePlayer player2 = new ConcretePlayer(false);
     private int turnsCounter = 0;
+    private ArrayList<ConcretePiece> piecesMoved = new ArrayList<>();
 
 
     //Constructors:
@@ -32,6 +35,18 @@ public class GameLogic implements PlayableLogic {
         board[6][6] = new Pawn(player1);
         board[5][7] = new Pawn(player1);
         board[5][5] = new King(player1);
+
+        int counter = 1;
+        for(int y=3; y<=7; y++){
+            for(int x=3; x<=7; x++){
+                if (board[x][y]!=null && board[x][y].getOwner()==player1){
+                    board[x][y].setName("D"+counter);
+                    board[x][y].addMove(new Position(x,y));
+                    counter++;
+                }
+            }
+        }
+        board[5][5].setName("K7");
 
         //Init black pawns:
         board[3][0] = new Pawn(player2);
@@ -61,14 +76,48 @@ public class GameLogic implements PlayableLogic {
         board[0][6] = new Pawn(player2);
         board[0][7] = new Pawn(player2);
         board[1][5] = new Pawn(player2);
+
+        //Updating number and moves:
+        counter = 1;
+        for(int y=0; y<=10; y++){
+            for(int x=0; x<=10; x++){
+                if (board[x][y]!=null && board[x][y].getOwner()==player2){
+                    board[x][y].setName("A"+counter);
+                    board[x][y].addMove(new Position(x,y));
+                    counter++;
+                }
+            }
+        }
     }
 
     //Methods:
     public boolean move(Position a, Position b){
-        //Creating new pointers to the real positions on the board according to the given coordinate:
-        //Position a = board[gottenA.getX()][gottenA.getY()]; //Will point to the real src position
-        //Position b = board[gottenB.getX()][gottenB.getY()]; //Will point to the real dst position
+        if(moveValidCheck(a,b)){
+            //Moving the piece:
+            board[b.getX()][b.getY()] = board[a.getX()][a.getY()];
+            board[a.getX()][a.getY()] = null;
 
+            //Updating moves recording:
+            board[b.getX()][b.getY()].addMove(b);
+
+            //Adding new pieces into piecesMoved ArrayList:
+            if(!piecesMoved.contains(board[b.getX()][b.getY()])){
+                piecesMoved.add(board[b.getX()][b.getY()]);
+            }
+
+            //Capturing check: (Only for pawn)
+            if(!board[b.getX()][b.getY()].getType().equals("U+2654")){
+                CapturingCheck(b);
+            }
+
+            turnsCounter++;
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean moveValidCheck(Position a, Position b){
         boolean bCorner = false;
 
         //Checking if a is empty:
@@ -105,14 +154,6 @@ public class GameLogic implements PlayableLogic {
                     if (board[a.getX()][i] != null) return false;
                 }
             }
-            //Moving the piece:
-            board[b.getX()][b.getY()] = board[a.getX()][a.getY()];
-            board[a.getX()][a.getY()] = null;
-            //Capturing check: (Only for pawn)
-            if(!board[b.getX()][b.getY()].getType().equals("U+2654")){
-                CapturingCheck(b);
-            }
-            turnsCounter++;
             return true;
         }
 
@@ -130,17 +171,8 @@ public class GameLogic implements PlayableLogic {
                     if (board[i][a.getY()] != null) return false;
                 }
             }
-            //Moving the piece:
-            board[b.getX()][b.getY()] = board[a.getX()][a.getY()];
-            board[a.getX()][a.getY()] = null;
-            //Capturing check: (Only for pawn)
-            if(!board[b.getX()][b.getY()].getType().equals("U+2654")){
-                CapturingCheck(b);
-            }
-            turnsCounter++;
             return true;
         }
-
         return false;
     }
 
@@ -247,59 +279,67 @@ public class GameLogic implements PlayableLogic {
     public boolean isGameFinished(){
 
         //Finding the KING:
-        int kingX=5, kingY=5;
-        outerLoop:
-        for(int i=0; i<=10; i++){
-            innerLoop:
-            for(int j=0; j<=10; j++){
-                if(board[i][j] !=null && board[i][j].getType().equals("U+2654")){
-                    kingX = i;
-                    kingY = j;
-                    break outerLoop;
-                }
-            }
-        }
+        Position kingP = findKing();
+        int kingX=kingP.getX(), kingY=kingP.getY();
 
         //Checking if the KING is in a corner:
         if( (kingX==0)&&(kingY==0) || (kingX==10)&&(kingY==0) || (kingX==10)&&(kingY==10) || (kingX==0)&&(kingY==10)){
             this.player1.addWin(); //Adding a win to player1 (white).
+            winningScenario(player1);
             return true;
         }
 
-        //First try, more complicated:
-//        if((board[0][0].getPieceOn()!=null && board[0][0].getPieceOn().getType().equals("U+2654")) ||
-//                (board[10][0].getPieceOn()!=null && board[10][0].getPieceOn().getType().equals("U+2654")) ||
-//                (board[10][10].getPieceOn()!=null && board[10][10].getPieceOn().getType().equals("U+2654")) ||
-//                (board[0][10].getPieceOn()!=null && board[0][10].getPieceOn().getType().equals("U+2654"))){
-//            return true;
-//        }
-
         //Checking if the KING is captured:
         boolean kingCap = true;
-
         //Assuming it's captured unless one side is empty or white pawn:
         //Remainder: the sign for white pawn is: "U+2659".
         //Up:
-        if(isValidCoor(kingX,kingY-1) && (board[kingX][kingY-1] == null || board[kingX][kingY-1].getType().equals("U+2659"))){
-            kingCap = false;
-        }
+        if(isValidCoor(kingX,kingY-1) && (board[kingX][kingY-1] == null || board[kingX][kingY-1].getType().equals("U+2659"))){ kingCap = false; }
         //Right:
-        if(isValidCoor(kingX+1,kingY) && (board[kingX+1][kingY] == null || board[kingX+1][kingY].getType().equals("U+2659"))){
-            kingCap = false;
-        }
+        if(isValidCoor(kingX+1,kingY) && (board[kingX+1][kingY] == null || board[kingX+1][kingY].getType().equals("U+2659"))){ kingCap = false; }
         //Down:
-        if(isValidCoor(kingX,kingY+1) && (board[kingX][kingY+1] == null || board[kingX][kingY+1].getType().equals("U+2659"))){
-            kingCap = false;
-        }
+        if(isValidCoor(kingX,kingY+1) && (board[kingX][kingY+1] == null || board[kingX][kingY+1].getType().equals("U+2659"))){ kingCap = false; }
         //Left:
-        if(isValidCoor(kingX-1,kingY) && (board[kingX-1][kingY] == null || board[kingX-1][kingY].getType().equals("U+2659"))){
-            kingCap = false;
-        }
-
+        if(isValidCoor(kingX-1,kingY) && (board[kingX-1][kingY] == null || board[kingX-1][kingY].getType().equals("U+2659"))){ kingCap = false; }
+        //King captured:
         if(kingCap){
             this.player2.addWin(); //Adding a win to player2 (black).
+            winningScenario(player2);
         }
         return kingCap;
+    }
+
+
+    /**
+     * This function activated when player win the game.
+     * @param winP - the winner.
+     */
+    private void winningScenario(Player winP){
+        //Sorting piecesMoved by: winner to loser > movements amount.
+        //TODO: Comperator.
+        sortByMove(winP);
+        for(ConcretePiece p : piecesMoved){
+            p.printMoves();
+        }
+    }
+
+    private void sortByMove(Player winP){
+        //Sorting by winner:
+    }
+
+    /**
+     * Helper function to find the king on the board.
+     * @return the Position it founded.
+     */
+    private Position findKing(){
+        for(int y=0; y<=10; y++){
+            for(int x=0; x<=10; x++){
+                if(board[x][y] !=null && board[x][y].getType().equals("U+2654")){
+                    return new Position(x,y);
+                }
+            }
+        }
+        return null;
     }
 
     /**
