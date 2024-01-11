@@ -5,7 +5,7 @@
 public class ConcretePlayer  implements Player{
 
     //Fields:
-    private boolean playerType;
+    private boolean playerType; //true = player 1 = white
     private int winsNum;
 
     //Constructors:

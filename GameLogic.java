@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * This class...
@@ -10,8 +11,8 @@ public class GameLogic implements PlayableLogic {
     private ConcretePlayer player1 = new ConcretePlayer(true);
     private ConcretePlayer player2 = new ConcretePlayer(false);
     private int turnsCounter = 0;
-    private ArrayList<ConcretePiece> piecesMoved = new ArrayList<>();
-
+    private ArrayList<ConcretePiece> piecesD = new ArrayList<>();
+    private ArrayList<ConcretePiece> piecesA = new ArrayList<>();
 
     //Constructors:
     public GameLogic() {
@@ -19,6 +20,8 @@ public class GameLogic implements PlayableLogic {
     }
 
     private void init(){
+        piecesD.clear();
+        piecesA.clear();
         //Init board:
 
         //Init white pawns and king:
@@ -42,6 +45,7 @@ public class GameLogic implements PlayableLogic {
                 if (board[x][y]!=null && board[x][y].getOwner()==player1){
                     board[x][y].setName("D"+counter);
                     board[x][y].addMove(new Position(x,y));
+                    piecesD.add(board[x][y]);
                     counter++;
                 }
             }
@@ -84,6 +88,7 @@ public class GameLogic implements PlayableLogic {
                 if (board[x][y]!=null && board[x][y].getOwner()==player2){
                     board[x][y].setName("A"+counter);
                     board[x][y].addMove(new Position(x,y));
+                    piecesA.add(board[x][y]);
                     counter++;
                 }
             }
@@ -99,11 +104,6 @@ public class GameLogic implements PlayableLogic {
 
             //Updating moves recording:
             board[b.getX()][b.getY()].addMove(b);
-
-            //Adding new pieces into piecesMoved ArrayList:
-            if(!piecesMoved.contains(board[b.getX()][b.getY()])){
-                piecesMoved.add(board[b.getX()][b.getY()]);
-            }
 
             //Capturing check: (Only for pawn)
             if(!board[b.getX()][b.getY()].getType().equals("U+2654")){
@@ -192,12 +192,14 @@ public class GameLogic implements PlayableLogic {
                         //Edge eating:
                         if (!isValidCoor(p.getX(), p.getY()-2)) {
                             board[p.getX()][p.getY()-1] = null;
+                            ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
                         //Two sides capture eating:
                         else if(board[p.getX()][p.getY()-2] != null &&
                                 board[p.getX()][p.getY()-2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
                                 !board[p.getX()][p.getY()-2].getType().equals("U+2654")){
                             board[p.getX()][p.getY()-1] = null;
+                            ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
                     }
                 }
@@ -212,12 +214,14 @@ public class GameLogic implements PlayableLogic {
                         //Edge eating:
                         if (!isValidCoor(p.getX()+2, p.getY())) {
                             board[p.getX()+1][p.getY()] = null;
+                            ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
                         //Two sides capture eating:
                         else if(board[p.getX()+2][p.getY()] != null &&
                                 board[p.getX()+2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
                                 !board[p.getX()+2][p.getY()].getType().equals("U+2654")){
                             board[p.getX()+1][p.getY()] = null;
+                            ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
                     }
                 }
@@ -232,12 +236,14 @@ public class GameLogic implements PlayableLogic {
                         //Edge eating:
                         if (!isValidCoor(p.getX(), p.getY()+2)) {
                             board[p.getX()][p.getY()+1] = null;
+                            ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
                         //Two sides capture eating:
                         else if(board[p.getX()][p.getY()+2] != null &&
                                 board[p.getX()][p.getY()+2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
                                 !board[p.getX()][p.getY()+2].getType().equals("U+2654")){
                             board[p.getX()][p.getY()+1] = null;
+                            ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
                     }
                 }
@@ -252,12 +258,14 @@ public class GameLogic implements PlayableLogic {
                         //Edge eating:
                         if (!isValidCoor(p.getX()-2, p.getY())) {
                             board[p.getX()+1][p.getY()] = null;
+                            ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
                         //Two sides capture eating:
                         else if(board[p.getX()-2][p.getY()] != null &&
                                 board[p.getX()-2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
                                 !board[p.getX()-2][p.getY()].getType().equals("U+2654")){
                             board[p.getX()-1][p.getY()] = null;
+                            ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
                     }
                 }
@@ -315,17 +323,28 @@ public class GameLogic implements PlayableLogic {
      * @param winP - the winner.
      */
     private void winningScenario(Player winP){
-        //Sorting piecesMoved by: winner to loser > movements amount.
-        //TODO: Comperator.
-        sortByMove(winP);
-        for(ConcretePiece p : piecesMoved){
-            p.printMoves();
+        //Sorting pieces ArrayList by: number of movements.
+        piecesD.sort(new ConcretePiece.movesComp());
+        piecesA.sort(new ConcretePiece.movesComp());
+        //Printing:
+        if(winP==player1){
+            for(ConcretePiece p : piecesD){ p.printMoves(); }
+            for(ConcretePiece p : piecesA){ p.printMoves(); }
         }
+        else{
+            for(ConcretePiece p : piecesA){ p.printMoves(); }
+            for(ConcretePiece p : piecesD){ p.printMoves(); }
+        }
+        System.out.println("***************************************************************************");
+
+        //Sorting pieces ArrayList by: kills.
+        //TODO: Merge the arraylists, remove the king to the side, sort them.
+
+        //Printing:
+        for(ConcretePiece p : allPieces){((Pawn) p).printKills(); }
+        //TODO: add the king back
     }
 
-    private void sortByMove(Player winP){
-        //Sorting by winner:
-    }
 
     /**
      * Helper function to find the king on the board.

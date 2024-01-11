@@ -5,7 +5,7 @@
 public class Pawn extends ConcretePiece{
 
     //Fields:
-    private int piecesCaptured = 0;
+    private int kills = 0;
 
     //Constructors:
     public Pawn(Player ownerV){
@@ -21,5 +21,10 @@ public class Pawn extends ConcretePiece{
     }
 
     //Methods:
-
+    public void addKill(){
+        this.kills++;
+    }
+    public int getKills(){
+        return kills;
+    }
 }
