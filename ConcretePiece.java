@@ -14,6 +14,7 @@ public abstract class ConcretePiece implements Piece{
     protected String type;
     protected String name;
     protected ArrayList<Position> moves = new ArrayList<>();
+    protected int squares = 0;
 
 
     //Constructors:
@@ -21,29 +22,36 @@ public abstract class ConcretePiece implements Piece{
     }
 
     //Methods:
+    //Getters and Setters:
     public Player getOwner(){
         return this.owner;
     }
     public String getType(){
         return this.type;
     }
-
     public String getName(){ return this.name; }
     public void setName(String name){ this.name = name; }
-
     public int getNumber(){
         String res = name.substring(1);
         return (Integer.parseInt(res));
     }
-
+    public int getSquares(){
+        return this.squares;
+    }
 
 
     /**
      * adds p as a Position (object) to the moves list.
      * @param p - the position that the piece is on now.
      */
-    public void addMove(Position p){
+    public void addMove(Position p)
+    {
         this.moves.add(p);
+        int mSize = moves.size();
+        if(mSize > 1) { //Means it is not the first addition of some move.
+            Position p2 = moves.get(mSize-2);
+            this.squares = this.squares + (Math.abs((p.getX() - p2.getX()) + (p.getY() - p2.getY())));
+        }
     }
 
     /**
@@ -52,12 +60,18 @@ public abstract class ConcretePiece implements Piece{
      * Note: if the piece didn't move (only one position recorded), it won't print anything.
      */
     public void printMoves(){
-        if (moves.size()>1){
+        if (moves.size() > 1){
             System.out.println(name+": "+moves.toString());
         }
     }
     public int numOfMoves(){
         return moves.size();
+    }
+
+    public void printSquares(){
+        if(moves.size() > 1){
+            System.out.println(name+": "+this.squares+" squares");
+        }
     }
 
     public static class movesComp implements Comparator<ConcretePiece>{
@@ -103,7 +117,28 @@ public abstract class ConcretePiece implements Piece{
                 }
                 return secondComp;
             }
-            return firstComp*-1;
+            return firstComp*(-1);
+        }
+    }
+
+    public static class squaresComp implements Comparator<ConcretePiece>{
+        @Override
+        public int compare(ConcretePiece p1, ConcretePiece p2){
+            return 1;
+        }
+        public int compare(ConcretePiece p1, ConcretePiece p2, Player winP){
+            //Comparing by number of squares:
+            int firstComp = Integer.compare(p1.getSquares(), p2.getSquares());
+            if(firstComp == 0){
+                //Comparing by serial number:
+                int secondComp = Integer.compare(p1.getNumber(), p2.getNumber());
+                if(secondComp == 0){
+                    if(p1.getOwner() == winP){ return -1; }
+                    return 1;
+                }
+                return secondComp;
+            }
+            return firstComp*(-1);
         }
     }
 

@@ -329,7 +329,7 @@ public class GameLogic implements PlayableLogic {
 
         System.out.println("***************************************************************************");
 
-        //Sorting pieces ArrayList by: kills:
+        //Sorting pieces ArrayList by: kills.
         //Remove the king to the side:
         Position kingP = findKing();
         ConcretePiece tmpKing = board[kingP.getX()][kingP.getY()];
@@ -344,6 +344,14 @@ public class GameLogic implements PlayableLogic {
         pieces.add(tmpKing);
 
         System.out.println("***************************************************************************");
+
+        //Sorting pieces ArrayList by: squares
+        ConcretePiece.killsComp comp3 = new ConcretePiece.killsComp();
+        pieces.sort((p1,p2) -> comp3.compare(p1, p2, winP));
+        for(ConcretePiece p : pieces){ p.printSquares(); }
+
+        System.out.println("***************************************************************************");
+
 
     }
 
