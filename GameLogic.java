@@ -11,8 +11,7 @@ public class GameLogic implements PlayableLogic {
     private ConcretePlayer player1 = new ConcretePlayer(true);
     private ConcretePlayer player2 = new ConcretePlayer(false);
     private int turnsCounter = 0;
-    private ArrayList<ConcretePiece> piecesD = new ArrayList<>();
-    private ArrayList<ConcretePiece> piecesA = new ArrayList<>();
+    private ArrayList<ConcretePiece> pieces = new ArrayList<>();
 
     //Constructors:
     public GameLogic() {
@@ -20,8 +19,7 @@ public class GameLogic implements PlayableLogic {
     }
 
     private void init(){
-        piecesD.clear();
-        piecesA.clear();
+        pieces.clear();
         //Init board:
 
         //Init white pawns and king:
@@ -45,7 +43,7 @@ public class GameLogic implements PlayableLogic {
                 if (board[x][y]!=null && board[x][y].getOwner()==player1){
                     board[x][y].setName("D"+counter);
                     board[x][y].addMove(new Position(x,y));
-                    piecesD.add(board[x][y]);
+                    pieces.add(board[x][y]);
                     counter++;
                 }
             }
@@ -88,7 +86,7 @@ public class GameLogic implements PlayableLogic {
                 if (board[x][y]!=null && board[x][y].getOwner()==player2){
                     board[x][y].setName("A"+counter);
                     board[x][y].addMove(new Position(x,y));
-                    piecesA.add(board[x][y]);
+                    pieces.add(board[x][y]);
                     counter++;
                 }
             }
@@ -324,25 +322,29 @@ public class GameLogic implements PlayableLogic {
      */
     private void winningScenario(Player winP){
         //Sorting pieces ArrayList by: number of movements.
-        piecesD.sort(new ConcretePiece.movesComp());
-        piecesA.sort(new ConcretePiece.movesComp());
+        ConcretePiece.movesComp comp1 = new ConcretePiece.movesComp();
+        pieces.sort((p1,p2) -> comp1.compare(p1, p2, winP));
         //Printing:
-        if(winP==player1){
-            for(ConcretePiece p : piecesD){ p.printMoves(); }
-            for(ConcretePiece p : piecesA){ p.printMoves(); }
-        }
-        else{
-            for(ConcretePiece p : piecesA){ p.printMoves(); }
-            for(ConcretePiece p : piecesD){ p.printMoves(); }
-        }
+        for(ConcretePiece p : pieces){ p.printMoves(); }
+
         System.out.println("***************************************************************************");
 
-        //Sorting pieces ArrayList by: kills.
-        //TODO: Merge the arraylists, remove the king to the side, sort them.
-
+        //Sorting pieces ArrayList by: kills:
+        //Remove the king to the side:
+        Position kingP = findKing();
+        ConcretePiece tmpKing = board[kingP.getX()][kingP.getY()];
+        pieces.remove(tmpKing);
+        ConcretePiece.killsComp comp2 = new ConcretePiece.killsComp();
+        pieces.sort((p1,p2) -> comp2.compare(p1, p2, winP));
         //Printing:
-        for(ConcretePiece p : allPieces){((Pawn) p).printKills(); }
-        //TODO: add the king back
+        for(ConcretePiece p : pieces){
+                ((Pawn) p).printKills();
+        }
+        //Adding the king back:
+        pieces.add(tmpKing);
+
+        System.out.println("***************************************************************************");
+
     }
 
 

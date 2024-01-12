@@ -27,4 +27,9 @@ public class Pawn extends ConcretePiece{
     public int getKills(){
         return kills;
     }
+    public void printKills(){
+        if (this.kills > 0) {
+            System.out.println(name+": "+this.kills+" kills");
+        }
+    }
 }

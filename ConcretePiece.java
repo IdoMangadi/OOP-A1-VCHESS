@@ -62,21 +62,46 @@ public abstract class ConcretePiece implements Piece{
 
     public static class movesComp implements Comparator<ConcretePiece>{
         @Override
-        public int compare(ConcretePiece p1, ConcretePiece p2){
-            int comp = Integer.compare(p1.numOfMoves(), p2.numOfMoves());
-            return comp;
+        public  int compare(ConcretePiece p1, ConcretePiece p2){
+            return 1;
+        }
+
+        public int compare(ConcretePiece p1, ConcretePiece p2, Player winP){
+            //Comparing if both from the same player:
+            if(p1.getOwner() == p2.getOwner()) {
+                //Comparing by number of moves:
+                int comp = Integer.compare(p1.numOfMoves(), p2.numOfMoves());
+                //Comparing by serial number:
+                if(comp == 0){
+                    return Integer.compare(p1.getNumber(), p2.getNumber());
+                }
+                return comp;
+            }
+            //Comparing by winner:
+            if(p1.getOwner() == winP){
+                return -1;
+            }
+            return 1;
+
         }
     }
 
-    public static class killComp implements Comparator<ConcretePiece>{
+    public static class killsComp implements Comparator<ConcretePiece>{
         @Override
         public int compare(ConcretePiece p1, ConcretePiece p2){
+            return 1;
+        }
+        public int compare(ConcretePiece p1, ConcretePiece p2, Player winP){
             //First comp by kills:
             int firstComp = Integer.compare(((Pawn) p1).getKills(),  ((Pawn) p2).getKills());
             if( firstComp == 0){
                 //If equals, compare by serial number:
-                int secondComp = Integer.compare();
-
+                int secondComp = Integer.compare(p1.getNumber(), p2.getNumber());
+                if (secondComp == 0) {
+                    if(p1.getOwner() == winP){ return -1; }
+                    return 1;
+                }
+                return secondComp;
             }
             return firstComp*-1;
         }
