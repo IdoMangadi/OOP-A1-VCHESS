@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * This class...
@@ -13,10 +14,15 @@ public class GameLogic implements PlayableLogic {
 
     private String whiteKing = "\u2654";
     private String whitePawn = "\u2659";
+
     private int turnsCounter = 0;
     private boolean gameFinishVar = false;
     private ArrayList<ConcretePiece> pieces = new ArrayList<>();
     private Position[][] positionsBoard = new Position[11][11];
+
+    //Undo tools:
+    private Stack<ConcretePiece> undoPiecesMoves = new Stack<>();
+    private Stack<ArrayList<ConcretePiece>> undoKills = new Stack<>();
 
 
     //Constructors:
@@ -29,7 +35,7 @@ public class GameLogic implements PlayableLogic {
         turnsCounter = 0;
         gameFinishVar = false;
 
-        //Init positionBoard:
+        //Init positionsBoard:
         for(int y=0; y<=10; y++){
             for (int x=0; x<=10; x++){
                 positionsBoard[x][y] = new Position(x,y);
@@ -130,7 +136,7 @@ public class GameLogic implements PlayableLogic {
                 positionsBoard[b.getX()][b.getY()].addStepped(board[b.getX()][b.getY()]);
 
                 //Capturing check: (Only for pawn)
-                if (!board[b.getX()][b.getY()].getType().equals("whiteKing")) {
+                if (!board[b.getX()][b.getY()].getType().equals(whiteKing)) {
                     CapturingCheck(b);
                 }
                 turnsCounter++;
@@ -159,7 +165,7 @@ public class GameLogic implements PlayableLogic {
         }
 
         //If b is a corner stone but the piece is pawn:
-        if (bCorner && !board[a.getX()][a.getY()].getType().equals("whiteKing")){
+        if (bCorner && !board[a.getX()][a.getY()].getType().equals(whiteKing)){
             return false;
         }
 
@@ -215,14 +221,14 @@ public class GameLogic implements PlayableLogic {
                         //Edge eating:
                         if (!isValidCoor(p.getX(), p.getY()-2)) {
                             board[p.getX()][p.getY()-1] = null;
-                            ((Pawn) board[p.getX()][p.getY()]).addKill();
+                            ((Pawn) board[p.getX()][p.getY()]).addKill(1);
                         }
                         //Two sides capture eating:
                         else if(board[p.getX()][p.getY()-2] != null &&
                                 board[p.getX()][p.getY()-2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
                                 !board[p.getX()][p.getY()-2].getType().equals(whiteKing)){
                             board[p.getX()][p.getY()-1] = null;
-                            ((Pawn) board[p.getX()][p.getY()]).addKill();
+                            ((Pawn) board[p.getX()][p.getY()]).addKill(1);
                         }
                     }
                 }
@@ -237,14 +243,14 @@ public class GameLogic implements PlayableLogic {
                         //Edge eating:
                         if (!isValidCoor(p.getX()+2, p.getY())) {
                             board[p.getX()+1][p.getY()] = null;
-                            ((Pawn) board[p.getX()][p.getY()]).addKill();
+                            ((Pawn) board[p.getX()][p.getY()]).addKill(1);
                         }
                         //Two sides capture eating:
                         else if(board[p.getX()+2][p.getY()] != null &&
                                 board[p.getX()+2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
                                 !board[p.getX()+2][p.getY()].getType().equals(whiteKing)){
                             board[p.getX()+1][p.getY()] = null;
-                            ((Pawn) board[p.getX()][p.getY()]).addKill();
+                            ((Pawn) board[p.getX()][p.getY()]).addKill(1);
                         }
                     }
                 }
@@ -259,14 +265,14 @@ public class GameLogic implements PlayableLogic {
                         //Edge eating:
                         if (!isValidCoor(p.getX(), p.getY()+2)) {
                             board[p.getX()][p.getY()+1] = null;
-                            ((Pawn) board[p.getX()][p.getY()]).addKill();
+                            ((Pawn) board[p.getX()][p.getY()]).addKill(1);
                         }
                         //Two sides capture eating:
                         else if(board[p.getX()][p.getY()+2] != null &&
                                 board[p.getX()][p.getY()+2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
                                 !board[p.getX()][p.getY()+2].getType().equals(whiteKing)){
                             board[p.getX()][p.getY()+1] = null;
-                            ((Pawn) board[p.getX()][p.getY()]).addKill();
+                            ((Pawn) board[p.getX()][p.getY()]).addKill(1);
                         }
                     }
                 }
@@ -281,14 +287,14 @@ public class GameLogic implements PlayableLogic {
                         //Edge eating:
                         if (!isValidCoor(p.getX()-2, p.getY())) {
                             board[p.getX()+1][p.getY()] = null;
-                            ((Pawn) board[p.getX()][p.getY()]).addKill();
+                            ((Pawn) board[p.getX()][p.getY()]).addKill(1);
                         }
                         //Two sides capture eating:
                         else if(board[p.getX()-2][p.getY()] != null &&
                                 board[p.getX()-2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
                                 !board[p.getX()-2][p.getY()].getType().equals(whiteKing)){
                             board[p.getX()-1][p.getY()] = null;
-                            ((Pawn) board[p.getX()][p.getY()]).addKill();
+                            ((Pawn) board[p.getX()][p.getY()]).addKill(1);
                         }
                     }
                 }
@@ -344,7 +350,7 @@ public class GameLogic implements PlayableLogic {
 
 
     /**
-     * This function activated when player win the game.
+     * This function is activated when player a wins the game.
      * @param winP - the winner.
      */
     private void winningScenario(Player winP){
@@ -444,8 +450,31 @@ public class GameLogic implements PlayableLogic {
         init();
     }
 
+    /**
+     * TODO: complete full length.
+     */
     public void undoLastMove(){
-        //TODO: complete.
+        if (turnsCounter != 0) {
+
+            //Handling move:
+            ConcretePiece lastMoved = this.undoPiecesMoves.pop();
+            Position lastPosition = lastMoved.getPosition();
+            lastMoved.undoMove();
+            this.board[lastMoved.getPosition().getX()][lastMoved.getPosition().getY()] = lastMoved; //reversing the piece
+            this.board[lastPosition.getX()][lastPosition.getY()] = null; //putting null in the last place.
+
+            //handling kills:
+            if (undoKills.peek() != null) {
+                ArrayList<ConcretePiece> lastsKilled = this.undoKills.pop();
+                for (ConcretePiece p : lastsKilled) {
+                    board[p.getPosition().getX()][p.getPosition().getY()] = p;  //returning the last killed pieces
+                }
+                ((Pawn) lastMoved).addKill(-lastsKilled.size());
+            }
+            //TODO: complete it with changing of the nulls.
+
+        }
+
     }
 
     public int getBoardSize(){

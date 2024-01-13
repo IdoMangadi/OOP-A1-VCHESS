@@ -1,5 +1,6 @@
 /**
- * This class...
+ * This class extends the ConcretePiece class.
+ * Represent an actual pawn (black/ white) on the board.
  */
 
 public class Pawn extends ConcretePiece{
@@ -21,8 +22,8 @@ public class Pawn extends ConcretePiece{
     }
 
     //Methods:
-    public void addKill(){
-        this.kills++;
+    public void addKill(int k){
+        this.kills = this.kills + k;
     }
     public int getKills(){
         return kills;

@@ -4,8 +4,9 @@ import java.util.Comparator;
 import static java.util.function.Predicate.isEqual;
 
 /**
- * This class...
- *
+ * This class implements the Piece class.
+ * Representing a concrete piece on the board.
+ * Containing three comparators (moves, kills, squares).
  */
 
 public abstract class ConcretePiece implements Piece{
@@ -15,7 +16,6 @@ public abstract class ConcretePiece implements Piece{
     protected String name;
     protected ArrayList<Position> moves = new ArrayList<>();
     protected int squares = 0;
-
 
     //Constructors:
     public ConcretePiece (){
@@ -38,10 +38,12 @@ public abstract class ConcretePiece implements Piece{
     public int getSquares(){
         return this.squares;
     }
-
+    public Position getPosition(){
+        return this.moves.get(this.moves.size()-1);
+    }
 
     /**
-     * adds p as a Position (object) to the moves list.
+     * Adds p as a Position (object) to the moves list.
      * @param p - the position that the piece is on now.
      */
     public void addMove(Position p)
@@ -55,6 +57,20 @@ public abstract class ConcretePiece implements Piece{
     }
 
     /**
+     * This method updates the moves list and the squares counter one step back.
+     */
+    public void undoMove(){
+        if (this.moves.size() > 1) {
+            int mSize = moves.size();
+            Position p = this.moves.get(mSize-1);
+            Position p2 = this.moves.get(mSize-2);
+            int lastSquare = Math.abs((p.getX() - p2.getX()) + (p.getY() - p2.getY()));
+            this.squares = this.squares - lastSquare;
+            this.moves.remove(this.moves.size() - 1);
+        }
+    }
+
+    /**
      * This function prints the moves of the piece like this:
      * [(5, 5), (5, 7), (3, 7)]   (by println).
      * Note: if the piece didn't move (only one position recorded), it won't print anything.
@@ -64,6 +80,7 @@ public abstract class ConcretePiece implements Piece{
             System.out.println(name+": "+moves.toString());
         }
     }
+
     public int numOfMoves(){
         return moves.size();
     }
@@ -141,7 +158,5 @@ public abstract class ConcretePiece implements Piece{
             return firstComp*(-1);
         }
     }
-
-
 
 }

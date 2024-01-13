@@ -2,7 +2,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
- * This class...
+ * This class represent a (x,y) type position.
+ * Holds a comparator of stepped on pieces.
  */
 
 public class Position {
