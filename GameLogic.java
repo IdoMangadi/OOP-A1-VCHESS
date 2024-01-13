@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * This class...
@@ -11,7 +10,9 @@ public class GameLogic implements PlayableLogic {
     private ConcretePlayer player1 = new ConcretePlayer(true);
     private ConcretePlayer player2 = new ConcretePlayer(false);
     private int turnsCounter = 0;
+    private boolean gameFinishVar = false;
     private ArrayList<ConcretePiece> pieces = new ArrayList<>();
+    private Position[][] positionsBoard = new Position[11][11];
 
     //Constructors:
     public GameLogic() {
@@ -20,8 +21,17 @@ public class GameLogic implements PlayableLogic {
 
     private void init(){
         pieces.clear();
-        //Init board:
+        turnsCounter = 0;
+        gameFinishVar = false;
 
+        //Init positionBoard:
+        for(int y=0; y<=10; y++){
+            for (int x=0; x<=10; x++){
+                positionsBoard[x][y] = new Position(x,y);
+            }
+        }
+
+        //Init board:
         //Init white pawns and king:
         board[5][3] = new Pawn(player1);
         board[4][4] = new Pawn(player1);
@@ -36,7 +46,7 @@ public class GameLogic implements PlayableLogic {
         board[6][6] = new Pawn(player1);
         board[5][7] = new Pawn(player1);
         board[5][5] = new King(player1);
-
+        //Updating name, first position, 'pieces' and positionBoard:
         int counter = 1;
         for(int y=3; y<=7; y++){
             for(int x=3; x<=7; x++){
@@ -44,6 +54,7 @@ public class GameLogic implements PlayableLogic {
                     board[x][y].setName("D"+counter);
                     board[x][y].addMove(new Position(x,y));
                     pieces.add(board[x][y]);
+                    positionsBoard[x][y].addStepped(board[x][y]);
                     counter++;
                 }
             }
@@ -79,7 +90,7 @@ public class GameLogic implements PlayableLogic {
         board[0][7] = new Pawn(player2);
         board[1][5] = new Pawn(player2);
 
-        //Updating number and moves:
+        //Updating name, first position, 'pieces' and positionBoard:
         counter = 1;
         for(int y=0; y<=10; y++){
             for(int x=0; x<=10; x++){
@@ -87,31 +98,41 @@ public class GameLogic implements PlayableLogic {
                     board[x][y].setName("A"+counter);
                     board[x][y].addMove(new Position(x,y));
                     pieces.add(board[x][y]);
+                    positionsBoard[x][y].addStepped(board[x][y]);
                     counter++;
                 }
+
             }
         }
     }
 
     //Methods:
     public boolean move(Position a, Position b){
-        if(moveValidCheck(a,b)){
-            //Moving the piece:
-            board[b.getX()][b.getY()] = board[a.getX()][a.getY()];
-            board[a.getX()][a.getY()] = null;
+        //Checking if the correct player try to move:
+        if( (turnsCounter%2==0 && board[a.getX()][a.getY()].getOwner() == player2) ||
+                (turnsCounter%2!=0 && board[a.getX()][a.getY()].getOwner() == player1))
+        {
 
-            //Updating moves recording:
-            board[b.getX()][b.getY()].addMove(b);
+            if (moveValidCheck(a, b)) {
+                //Moving the piece:
+                board[b.getX()][b.getY()] = board[a.getX()][a.getY()];
+                board[a.getX()][a.getY()] = null;
 
-            //Capturing check: (Only for pawn)
-            if(!board[b.getX()][b.getY()].getType().equals("U+2654")){
-                CapturingCheck(b);
+                //Updating moves recording:
+                board[b.getX()][b.getY()].addMove(b);
+
+                //Updating Position steppedOn:
+                positionsBoard[b.getX()][b.getY()].addStepped(board[b.getX()][b.getY()]);
+
+                //Capturing check: (Only for pawn)
+                if (!board[b.getX()][b.getY()].getType().equals("U+2654")) {
+                    CapturingCheck(b);
+                }
+                turnsCounter++;
+                gameFinishVar = finishCheck();
+                return true;
             }
-
-            turnsCounter++;
-            return true;
         }
-
         return false;
     }
 
@@ -282,8 +303,11 @@ public class GameLogic implements PlayableLogic {
         return player2;
     }
 
-    public boolean isGameFinished(){
+    public boolean isGameFinished() {
+        return gameFinishVar;
+    }
 
+    public boolean finishCheck(){
         //Finding the KING:
         Position kingP = findKing();
         int kingX=kingP.getX(), kingY=kingP.getY();
@@ -346,13 +370,28 @@ public class GameLogic implements PlayableLogic {
         System.out.println("***************************************************************************");
 
         //Sorting pieces ArrayList by: squares
-        ConcretePiece.killsComp comp3 = new ConcretePiece.killsComp();
+        ConcretePiece.squaresComp comp3 = new ConcretePiece.squaresComp();
         pieces.sort((p1,p2) -> comp3.compare(p1, p2, winP));
         for(ConcretePiece p : pieces){ p.printSquares(); }
 
         System.out.println("***************************************************************************");
 
-
+        //Handling positionBoard sorting and printing:
+        //Converting to a ArrayList:
+        ArrayList<Position> positionsToSort = new ArrayList<>();
+        for(int y=0; y<=10; y++){
+            for(int x=0; x<=10; x++) {
+                positionsToSort.add(positionsBoard[x][y]);
+            }
+        }
+        //Sorting:
+        Position.steppedOnComp comp4 = new Position.steppedOnComp();
+        positionsToSort.sort(comp4);
+        //Printing:
+        for(Position p : positionsToSort){
+            p.printStepped();
+        }
+        System.out.println("***************************************************************************");
     }
 
 
