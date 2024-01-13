@@ -12,11 +12,11 @@ public class Pawn extends ConcretePiece{
         super.owner = ownerV;
         //Handling white player (From now on "Player 1"):
         if (ownerV.isPlayerOne()){
-            super.type = "U+2659";
+            super.type = "\u2659";
         }
         //Handling black player (From now on "Player 0"):
         else{
-            super.type = "U+265F";
+            super.type = "\u265F";
         }
     }
 

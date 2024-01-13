@@ -9,7 +9,7 @@ public class King extends ConcretePiece{
     //Constructors:
     public King(Player ownerV){
         super.owner = ownerV;
-        super.type = "U+2654";
+        super.type = "\u2654";
     }
     //Methods:
 

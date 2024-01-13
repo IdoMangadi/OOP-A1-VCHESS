@@ -7,12 +7,17 @@ import java.util.ArrayList;
 public class GameLogic implements PlayableLogic {
     //Fields:
     private ConcretePiece[][] board = new ConcretePiece[11][11];
+
     private ConcretePlayer player1 = new ConcretePlayer(true);
     private ConcretePlayer player2 = new ConcretePlayer(false);
+
+    private String whiteKing = "\u2654";
+    private String whitePawn = "\u2659";
     private int turnsCounter = 0;
     private boolean gameFinishVar = false;
     private ArrayList<ConcretePiece> pieces = new ArrayList<>();
     private Position[][] positionsBoard = new Position[11][11];
+
 
     //Constructors:
     public GameLogic() {
@@ -125,7 +130,7 @@ public class GameLogic implements PlayableLogic {
                 positionsBoard[b.getX()][b.getY()].addStepped(board[b.getX()][b.getY()]);
 
                 //Capturing check: (Only for pawn)
-                if (!board[b.getX()][b.getY()].getType().equals("U+2654")) {
+                if (!board[b.getX()][b.getY()].getType().equals("whiteKing")) {
                     CapturingCheck(b);
                 }
                 turnsCounter++;
@@ -154,7 +159,7 @@ public class GameLogic implements PlayableLogic {
         }
 
         //If b is a corner stone but the piece is pawn:
-        if (bCorner && !board[a.getX()][a.getY()].getType().equals("U+2654")){
+        if (bCorner && !board[a.getX()][a.getY()].getType().equals("whiteKing")){
             return false;
         }
 
@@ -198,7 +203,6 @@ public class GameLogic implements PlayableLogic {
     /**
      * Private use function activated after moving.
      * It's checks if a capturing has done (only by pawn).
-     * Remainder: king type is : "U+2654".
      * @param p - the position in which the pawn
      */
     private void CapturingCheck(Position p){
@@ -207,7 +211,7 @@ public class GameLogic implements PlayableLogic {
         if(isValidCoor(p.getX(), p.getY()-1)){  //Position validation check.
             if(board[p.getX()][p.getY()-1] != null) {  //Checking that there is a piece there.
                 if (board[p.getX()][p.getY()-1].getOwner() != board[p.getX()][p.getY()].getOwner()) {  //Owner check.
-                    if (!board[p.getX()][p.getY()-1].getType().equals("U+2654")) { //King-eating-try checking.
+                    if (!board[p.getX()][p.getY()-1].getType().equals(whiteKing)) { //King-eating-try checking.
                         //Edge eating:
                         if (!isValidCoor(p.getX(), p.getY()-2)) {
                             board[p.getX()][p.getY()-1] = null;
@@ -216,7 +220,7 @@ public class GameLogic implements PlayableLogic {
                         //Two sides capture eating:
                         else if(board[p.getX()][p.getY()-2] != null &&
                                 board[p.getX()][p.getY()-2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
-                                !board[p.getX()][p.getY()-2].getType().equals("U+2654")){
+                                !board[p.getX()][p.getY()-2].getType().equals(whiteKing)){
                             board[p.getX()][p.getY()-1] = null;
                             ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
@@ -229,7 +233,7 @@ public class GameLogic implements PlayableLogic {
         if(isValidCoor(p.getX()+1, p.getY())){  //Position validation check.
             if(board[p.getX()+1][p.getY()] != null) {  //Checking that there is a piece there.
                 if (board[p.getX()+1][p.getY()].getOwner() != board[p.getX()][p.getY()].getOwner()) {  //Owner check.
-                    if (!board[p.getX()+1][p.getY()].getType().equals("U+2654")) { //King-eating-try checking.
+                    if (!board[p.getX()+1][p.getY()].getType().equals(whiteKing)) { //King-eating-try checking.
                         //Edge eating:
                         if (!isValidCoor(p.getX()+2, p.getY())) {
                             board[p.getX()+1][p.getY()] = null;
@@ -238,7 +242,7 @@ public class GameLogic implements PlayableLogic {
                         //Two sides capture eating:
                         else if(board[p.getX()+2][p.getY()] != null &&
                                 board[p.getX()+2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
-                                !board[p.getX()+2][p.getY()].getType().equals("U+2654")){
+                                !board[p.getX()+2][p.getY()].getType().equals(whiteKing)){
                             board[p.getX()+1][p.getY()] = null;
                             ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
@@ -251,7 +255,7 @@ public class GameLogic implements PlayableLogic {
         if(isValidCoor(p.getX(), p.getY()+1)){  //Position validation check.
             if(board[p.getX()][p.getY()+1] != null) {  //Checking that there is a piece there.
                 if (board[p.getX()][p.getY()+1].getOwner() != board[p.getX()][p.getY()].getOwner()) {  //Owner check.
-                    if (!board[p.getX()][p.getY()+1].getType().equals("U+2654")) { //King-eating-try checking.
+                    if (!board[p.getX()][p.getY()+1].getType().equals(whiteKing)) { //King-eating-try checking.
                         //Edge eating:
                         if (!isValidCoor(p.getX(), p.getY()+2)) {
                             board[p.getX()][p.getY()+1] = null;
@@ -260,7 +264,7 @@ public class GameLogic implements PlayableLogic {
                         //Two sides capture eating:
                         else if(board[p.getX()][p.getY()+2] != null &&
                                 board[p.getX()][p.getY()+2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
-                                !board[p.getX()][p.getY()+2].getType().equals("U+2654")){
+                                !board[p.getX()][p.getY()+2].getType().equals(whiteKing)){
                             board[p.getX()][p.getY()+1] = null;
                             ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
@@ -273,7 +277,7 @@ public class GameLogic implements PlayableLogic {
         if(isValidCoor(p.getX()-1, p.getY())){  //Position validation check.
             if(board[p.getX()-1][p.getY()] != null) {  //Checking that there is a piece there.
                 if (board[p.getX()-1][p.getY()].getOwner() != board[p.getX()][p.getY()].getOwner()) {  //Owner check.
-                    if (!board[p.getX()-1][p.getY()].getType().equals("U+2654")) { //King-eating-try checking.
+                    if (!board[p.getX()-1][p.getY()].getType().equals(whiteKing)) { //King-eating-try checking.
                         //Edge eating:
                         if (!isValidCoor(p.getX()-2, p.getY())) {
                             board[p.getX()+1][p.getY()] = null;
@@ -282,7 +286,7 @@ public class GameLogic implements PlayableLogic {
                         //Two sides capture eating:
                         else if(board[p.getX()-2][p.getY()] != null &&
                                 board[p.getX()-2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
-                                !board[p.getX()-2][p.getY()].getType().equals("U+2654")){
+                                !board[p.getX()-2][p.getY()].getType().equals(whiteKing)){
                             board[p.getX()-1][p.getY()] = null;
                             ((Pawn) board[p.getX()][p.getY()]).addKill();
                         }
@@ -322,15 +326,14 @@ public class GameLogic implements PlayableLogic {
         //Checking if the KING is captured:
         boolean kingCap = true;
         //Assuming it's captured unless one side is empty or white pawn:
-        //Remainder: the sign for white pawn is: "U+2659".
         //Up:
-        if(isValidCoor(kingX,kingY-1) && (board[kingX][kingY-1] == null || board[kingX][kingY-1].getType().equals("U+2659"))){ kingCap = false; }
+        if(isValidCoor(kingX,kingY-1) && (board[kingX][kingY-1] == null || board[kingX][kingY-1].getType().equals(whitePawn))){ kingCap = false; }
         //Right:
-        if(isValidCoor(kingX+1,kingY) && (board[kingX+1][kingY] == null || board[kingX+1][kingY].getType().equals("U+2659"))){ kingCap = false; }
+        if(isValidCoor(kingX+1,kingY) && (board[kingX+1][kingY] == null || board[kingX+1][kingY].getType().equals(whitePawn))){ kingCap = false; }
         //Down:
-        if(isValidCoor(kingX,kingY+1) && (board[kingX][kingY+1] == null || board[kingX][kingY+1].getType().equals("U+2659"))){ kingCap = false; }
+        if(isValidCoor(kingX,kingY+1) && (board[kingX][kingY+1] == null || board[kingX][kingY+1].getType().equals(whitePawn))){ kingCap = false; }
         //Left:
-        if(isValidCoor(kingX-1,kingY) && (board[kingX-1][kingY] == null || board[kingX-1][kingY].getType().equals("U+2659"))){ kingCap = false; }
+        if(isValidCoor(kingX-1,kingY) && (board[kingX-1][kingY] == null || board[kingX-1][kingY].getType().equals(whitePawn))){ kingCap = false; }
         //King captured:
         if(kingCap){
             this.player2.addWin(); //Adding a win to player2 (black).
@@ -402,7 +405,7 @@ public class GameLogic implements PlayableLogic {
     private Position findKing(){
         for(int y=0; y<=10; y++){
             for(int x=0; x<=10; x++){
-                if(board[x][y] !=null && board[x][y].getType().equals("U+2654")){
+                if(board[x][y] !=null && board[x][y].getType().equals(whiteKing)){
                     return new Position(x,y);
                 }
             }
