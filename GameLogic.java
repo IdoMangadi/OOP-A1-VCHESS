@@ -2,7 +2,9 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 /**
- * This class...
+ * Implementing the PlayableLogic class, this class is a main-like class of the game viking's chess.
+ * Representing the specific game and operates the actions that the players do - on the game board itself.
+ * All logic calculations made in this class are according to the game rules.
  */
 
 public class GameLogic implements PlayableLogic {
