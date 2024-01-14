@@ -11,6 +11,7 @@ public class Position {
     private int x;
     private int y;
     private ArrayList<ConcretePiece> steppedOn = new ArrayList<>();
+    private ArrayList<ConcretePiece> shrinkSteppedOn = new ArrayList<>();
 
     //Constructors:
     public Position(int x, int y){
@@ -35,27 +36,40 @@ public class Position {
     }
 
     /**
-     * Note: this method adding one time every piece hou stepped on it.
-     * Even if a piece stepped several tine on the position, it will be adding one time.
+     * Adding the piece p to the stepped on history list.
      * @param p - the stepping piece.
      */
     public void addStepped(ConcretePiece p){
-        if (!this.steppedOn.contains(p)) {
             this.steppedOn.add(p);
+            if(!this.shrinkSteppedOn.contains(p)){
+                this.shrinkSteppedOn.add(p);
+            }
+    }
+
+    public void removeLast(){
+        if(!this.steppedOn.isEmpty()){
+            ConcretePiece p = this.steppedOn.remove(this.steppedOn.size()-1); //Removing the last piece that stepped on the position.
+            if(this.steppedOn.isEmpty() || !this.steppedOn.contains(p)){
+                this.shrinkSteppedOn.remove(p); //Removing that piece from the list of the pieces that stepped on in this hall game.
+            }
         }
     }
 
-    public int getNumOfStepped(){
-        return this.steppedOn.size();
+    /**
+     * This method returns the number of pieces that stepped on it.
+     * @return the number of pieces that stepped on it.
+     */
+    public int getNumOfPiecesStepped(){
+        return this.shrinkSteppedOn.size();
     }
 
     /**
      * Printing only positions that at least two pieces stepped on.
      */
     public void printStepped(){
-        int numOfStepped = this.steppedOn.size();
+        int numOfStepped = this.shrinkSteppedOn.size();
         if (numOfStepped > 1) {
-            System.out.println(this.toString() + this.steppedOn.size() + " pieces");
+            System.out.println(this.toString() + this.shrinkSteppedOn.size() + " pieces");
         }
     }
 
@@ -64,7 +78,7 @@ public class Position {
         @Override
         public int compare(Position p1, Position p2)
         {
-            int firstComp = Integer.compare(p1.getNumOfStepped(), p2.getNumOfStepped());
+            int firstComp = Integer.compare(p1.getNumOfPiecesStepped(), p2.getNumOfPiecesStepped());
             if (firstComp == 0){
                 int secondComp = Integer.compare(p1.getX(), p2.getX());
                 if (secondComp == 0){
