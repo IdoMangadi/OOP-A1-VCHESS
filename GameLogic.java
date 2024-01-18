@@ -384,8 +384,8 @@ public class GameLogic implements PlayableLogic {
      */
     private void winningScenario(Player winP){
         //Sorting pieces ArrayList by: number of movements.
-        ConcretePiece.movesComp comp1 = new ConcretePiece.movesComp();
-        pieces.sort((p1,p2) -> comp1.compare(p1, p2, winP));
+        ConcretePiece.movesComp comp1 = new ConcretePiece.movesComp(winP);
+        pieces.sort(comp1);
         //Printing:
         for(ConcretePiece p : pieces){ p.printMoves(); }
 
@@ -396,8 +396,8 @@ public class GameLogic implements PlayableLogic {
         Position kingP = findKing();
         ConcretePiece tmpKing = board[kingP.getX()][kingP.getY()];
         pieces.remove(tmpKing);
-        ConcretePiece.killsComp comp2 = new ConcretePiece.killsComp();
-        pieces.sort((p1,p2) -> comp2.compare(p1, p2, winP));
+        ConcretePiece.killsComp comp2 = new ConcretePiece.killsComp(winP);
+        pieces.sort(comp2);
         //Printing:
         for(ConcretePiece p : pieces){
                 ((Pawn) p).printKills();
@@ -408,8 +408,8 @@ public class GameLogic implements PlayableLogic {
         System.out.println("***************************************************************************");
 
         //Sorting pieces ArrayList by: squares
-        ConcretePiece.squaresComp comp3 = new ConcretePiece.squaresComp();
-        pieces.sort((p1,p2) -> comp3.compare(p1, p2, winP));
+        ConcretePiece.squaresComp comp3 = new ConcretePiece.squaresComp(winP);
+        pieces.sort(comp3);
         for(ConcretePiece p : pieces){ p.printSquares(); }
 
         System.out.println("***************************************************************************");

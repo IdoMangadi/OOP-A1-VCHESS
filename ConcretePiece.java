@@ -92,12 +92,15 @@ public abstract class ConcretePiece implements Piece{
     }
 
     public static class movesComp implements Comparator<ConcretePiece>{
-        @Override
-        public  int compare(ConcretePiece p1, ConcretePiece p2){
-            return 1;
+        //Field:
+        private Player winP;
+        //Constructor:
+        public movesComp(Player player){
+            this.winP = player;
         }
-
-        public int compare(ConcretePiece p1, ConcretePiece p2, Player winP){
+        //Method:
+        @Override
+        public int compare(ConcretePiece p1, ConcretePiece p2){
             //Comparing if both from the same player:
             if(p1.getOwner() == p2.getOwner()) {
                 //Comparing by number of moves:
@@ -118,11 +121,14 @@ public abstract class ConcretePiece implements Piece{
     }
 
     public static class killsComp implements Comparator<ConcretePiece>{
+        //Field:
+        private Player winP;
+        //Constructor:
+        public killsComp(Player player){
+            this.winP = player;
+        }
         @Override
         public int compare(ConcretePiece p1, ConcretePiece p2){
-            return 1;
-        }
-        public int compare(ConcretePiece p1, ConcretePiece p2, Player winP){
             //First comp by kills:
             int firstComp = Integer.compare(((Pawn) p1).getKills(),  ((Pawn) p2).getKills());
             if( firstComp == 0){
@@ -139,11 +145,14 @@ public abstract class ConcretePiece implements Piece{
     }
 
     public static class squaresComp implements Comparator<ConcretePiece>{
+        //Field:
+        private Player winP;
+        //Constructor:
+        public squaresComp(Player player){
+            this.winP = player;
+        }
         @Override
         public int compare(ConcretePiece p1, ConcretePiece p2){
-            return 1;
-        }
-        public int compare(ConcretePiece p1, ConcretePiece p2, Player winP){
             //Comparing by number of squares:
             int firstComp = Integer.compare(p1.getSquares(), p2.getSquares());
             if(firstComp == 0){
