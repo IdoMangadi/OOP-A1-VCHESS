@@ -158,7 +158,6 @@ public class GameLogic implements PlayableLogic {
     }
 
     private boolean moveValidCheck(Position a, Position b){
-        boolean bCorner = false;
 
         //Checking if a is empty:
         if(board[a.getX()][a.getY()]==null){
@@ -170,9 +169,7 @@ public class GameLogic implements PlayableLogic {
         }
 
         //Checking if b is  a corner stone:
-        if ((b.getX()==0 && (b.getY()==0 || b.getY()==10)) || (b.getX()==10 && (b.getY()==0 || b.getY()==10)) ){
-            bCorner = true;
-        }
+        boolean bCorner = isCornerStone(b);
 
         //If b is a corner stone but the piece is pawn:
         if (bCorner && !board[a.getX()][a.getY()].getType().equals(whiteKing)){
@@ -217,6 +214,18 @@ public class GameLogic implements PlayableLogic {
     }
 
     /**
+     * This function checks if a given position is a corner stone.
+     * @param p - the position to check.
+     * @return true if p is a corner stone.
+     */
+    private boolean isCornerStone(Position p){
+        if ((p.getX()==0 && (p.getY()==0 || p.getY()==10)) || (p.getX()==10 && (p.getY()==0 || p.getY()==10)) ){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Private use function activated after moving.
      * It's checks if a capturing has done (only by pawn).
      * @param p - the position in which the pawn
@@ -238,9 +247,10 @@ public class GameLogic implements PlayableLogic {
                             killedCounter++;
                         }
                         //Two sides capture eating:
-                        else if(board[p.getX()][p.getY()-2] != null &&
+                        else if(isCornerStone(this.positionsBoard[p.getX()][p.getY()-2]) ||
+                                (board[p.getX()][p.getY()-2] != null &&
                                 board[p.getX()][p.getY()-2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
-                                !board[p.getX()][p.getY()-2].getType().equals(whiteKing)){
+                                !board[p.getX()][p.getY()-2].getType().equals(whiteKing))){
                             piecesKilled.add(board[p.getX()][p.getY()-1]);
                             board[p.getX()][p.getY()-1] = null;
                             ((Pawn) board[p.getX()][p.getY()]).addKill(1);
@@ -264,9 +274,10 @@ public class GameLogic implements PlayableLogic {
                             killedCounter++;
                         }
                         //Two sides capture eating:
-                        else if(board[p.getX()+2][p.getY()] != null &&
+                        else if(isCornerStone(this.positionsBoard[p.getX()+2][p.getY()]) ||
+                                (board[p.getX()+2][p.getY()] != null &&
                                 board[p.getX()+2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
-                                !board[p.getX()+2][p.getY()].getType().equals(whiteKing)){
+                                !board[p.getX()+2][p.getY()].getType().equals(whiteKing))){
                             piecesKilled.add(board[p.getX()+1][p.getY()]);
                             board[p.getX()+1][p.getY()] = null;
                             ((Pawn) board[p.getX()][p.getY()]).addKill(1);
@@ -290,9 +301,10 @@ public class GameLogic implements PlayableLogic {
                             killedCounter++;
                         }
                         //Two sides capture eating:
-                        else if(board[p.getX()][p.getY()+2] != null &&
+                        else if(isCornerStone(this.positionsBoard[p.getX()][p.getY()+2]) ||
+                                (board[p.getX()][p.getY()+2] != null &&
                                 board[p.getX()][p.getY()+2].getOwner() == board[p.getX()][p.getY()].getOwner() &&
-                                !board[p.getX()][p.getY()+2].getType().equals(whiteKing)){
+                                !board[p.getX()][p.getY()+2].getType().equals(whiteKing))){
                             piecesKilled.add(board[p.getX()][p.getY()+1]);
                             board[p.getX()][p.getY()+1] = null;
                             ((Pawn) board[p.getX()][p.getY()]).addKill(1);
@@ -316,9 +328,10 @@ public class GameLogic implements PlayableLogic {
                             killedCounter++;
                         }
                         //Two sides capture eating:
-                        else if(board[p.getX()-2][p.getY()] != null &&
+                        else if(isCornerStone(this.positionsBoard[p.getX()-2][p.getY()]) ||
+                                (board[p.getX()-2][p.getY()] != null &&
                                 board[p.getX()-2][p.getY()].getOwner() == board[p.getX()][p.getY()].getOwner() &&
-                                !board[p.getX()-2][p.getY()].getType().equals(whiteKing)){
+                                !board[p.getX()-2][p.getY()].getType().equals(whiteKing))){
                             piecesKilled.add(board[p.getX()-1][p.getY()]);
                             board[p.getX()-1][p.getY()] = null;
                             ((Pawn) board[p.getX()][p.getY()]).addKill(1);
